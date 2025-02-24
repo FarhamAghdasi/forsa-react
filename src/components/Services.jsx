@@ -3,28 +3,37 @@ import React, { useState, useEffect } from 'react';
 const Services = () => {
   const [services, setServices] = useState([]); // ذخیره داده‌های خدمات
   const [isLoading, setIsLoading] = useState(true); // وضعیت بارگذاری
+  const [error, setError] = useState(null); // مدیریت خطا
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        // ارسال درخواست GET به API
         const response = await fetch('https://bk.acoachgroup.com/service-get?pageNo=1&pageSize=6', {
           method: 'GET',
           headers: {
             'domain': 'acoachgroup.com', // دامنه API
           },
         });
+
         const result = await response.json();
 
-        if (result.code === 1) {
-          setServices(result.data); // ذخیره داده‌های خدمات
+        if (result.code === "1") {
+          // فیلتر کردن خدماتی که ID آنها یکی از مقادیر مشخص شده است
+          const allowedIds = [23, 24, 25, 26, 27, 28]; // شناسه‌های مجاز
+          const filteredServices = result.data.filter(service =>
+            allowedIds.includes(service.id) // بررسی اینکه id در لیست allowedIds باشد
+          );
+
+          // انتخاب 4 سرویس اول از فیلتر شده‌ها
+          setServices(filteredServices); 
         } else {
-          console.error('خطا در دریافت خدمات:', result.msg);
+          setError("خطا در دریافت اطلاعات");
         }
       } catch (error) {
-        console.error('خطا در اتصال به سرور:', error);
+        console.error("Error fetching services:", error);
+        setError("خطا در دریافت اطلاعات");
       } finally {
-        setIsLoading(false); // پایان بارگذاری
+        setIsLoading(false); // وضعیت بارگذاری را به false تغییر می‌دهیم
       }
     };
 
@@ -33,6 +42,10 @@ const Services = () => {
 
   if (isLoading) {
     return <div>در حال بارگذاری...</div>; // وضعیت بارگذاری
+  }
+
+  if (error) {
+    return <div>{error}</div>; // نمایش پیام خطا
   }
 
   return (
@@ -51,14 +64,11 @@ const Services = () => {
             <div className="col-12 col-md-6 col-lg-4 mx-auto" key={service.id}>
               <div className="service-box wow fadeInUp" data-wow-delay="0.2s">
                 <div className="service-icon">
-                  <img className="img-icon" src={service.pic} alt={service.title} draggable="false" />
+
                 </div>
                 <div className="service-content">
                   <h3 className="service-title">{service.title}</h3>
                   <p className="service-text">{service.description}</p>
-                  {service.btnTitle && service.btnUrl && (
-                    <a className="ma-btn-primary" href={service.btnUrl}>{service.btnTitle}</a>
-                  )}
                 </div>
               </div>
             </div>
@@ -71,6 +81,6 @@ const Services = () => {
       </div>
     </section>
   );
-}
+};
 
 export default Services;

@@ -1,36 +1,179 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 
 const Pricing = () => {
-  const [plans, setPlans] = useState([]);
-  const [showMore, setShowMore] = useState({});
+  const [plans] = useState([
+    {
+      id: 1,
+      title: "سایت ویژه کسب و کار نوپا",
+      description: "سایت ویژه برای کسب و کارهای نوپا با امکانات ویژه.",
+      price: 1000000,
+      discount: 0,
+      position: '1',
+      moreBtnTitle: "بیشتر بدانید",
+      moreBtnUrl: "http://example.com",
+      orderBtnTitle: "سفارش",
+      orderBtnUrl: "http://example.com/order",
+      features: [
+        "زبان برنامه نویسی ASP.NET",
+        "پیاده سازی سئو تکنیکال",
+        "طراحی با استانداردهای گوگل برای سئو پذیری",
+        "بهینه سازی کدهای فرانت اند و بک اند",
+        "امنیت و Backup  روزانه",
+        "سرعت بالای بارگذاری صفحات",
+        "لایه امنیتی SSL",
+        "قالب ریسپانسیو",
+        "عضویت و ورود با شماره موبایل",
+        "بخش وبلاگ و مقالات",
+        "آموزش تولیدمحتوای بهینه",
+        "پشتیبانی فنی",
+        "ایمیل اختصاصی",
+        "آموزش پنل کاربری",
+        "پشتیبان آموزشی برای کمک در درج محتوای اولیه"
+      ]
+    },
+    {
+      id: 2,
+      title: "سایت فروشگاهی",
+      description: "سایت فروشگاهی با ویژگی‌های فروشگاهی خاص.",
+      price: 2000000,
+      discount: 200000,
+      position: '2',
+      moreBtnTitle: "بیشتر بدانید",
+      moreBtnUrl: "http://example.com",
+      orderBtnTitle: "سفارش",
+      orderBtnUrl: "http://example.com/order",
+      features: [
+        "زبان برنامه نویسی ASP.NET",
+        "پیاده سازی سئو تکنیکال",
+        "طراحی با استانداردهای گوگل برای سئو پذیری",
+        "بهینه سازی کدهای فرانت اند و بک اند",
+        "امنیت و Backup  روزانه",
+        "سرعت بالای بارگذاری صفحات",
+        "لایه امنیتی SSL",
+        "قالب ریسپانسیو",
+        "عضویت و ورود با شماره موبایل",
+        "بخش وبلاگ و مقالات",
+        "آموزش تولیدمحتوای بهینه",
+        "پشتیبانی فنی",
+        "ایمیل اختصاصی",
+        "آموزش پنل کاربری",
+        "پشتیبان آموزشی برای کمک در درج محتوای اولیه",
+        "اتصال به درگاه پرداخت",
+        "دسته بندی محصولات",
+        "تعریف مدیر با سطح دسترسی متفاوت",
+        "امکان تغییر وضعیت نمایش کالا",
+        "قابلیت انبارداری و گزارش گیری",
+        "افزودن نامحدود کالا به سایت"
+      ]
+    },
+    {
+      id: 3,
+      title: "سایت اختصاصی",
+      description: "سایت اختصاصی با ویژگی‌های ویژه برای کسب و کارهای خاص.",
+      price: 3000000,
+      discount: 500000,
+      position: '3',
+      moreBtnTitle: "بیشتر بدانید",
+      moreBtnUrl: "http://example.com",
+      orderBtnTitle: "سفارش",
+      orderBtnUrl: "http://example.com/order",
+      features: [
+        "زبان برنامه نویسی ASP.NET",
+        "پیاده سازی سئو تکنیکال",
+        "طراحی با استانداردهای گوگل برای سئو پذیری",
+        "بهینه سازی کدهای فرانت اند و بک اند",
+        "امنیت و Backup  روزانه",
+        "سرعت بالای بارگذاری صفحات",
+        "لایه امنیتی SSL",
+        "قالب ریسپانسیو",
+        "عضویت و ورود با شماره موبایل",
+        "بخش وبلاگ و مقالات",
+        "آموزش تولیدمحتوای بهینه",
+        "پشتیبانی فنی",
+        "ایمیل اختصاصی",
+        "آموزش پنل کاربری",
+        "پشتیبان آموزشی برای کمک در درج محتوای اولیه",
+        "اتصال به درگاه پرداخت",
+        "دسته بندی محصولات",
+        "تعریف مدیر با سطح دسترسی متفاوت",
+        "امکان تغییر وضعیت نمایش کالا",
+        "قابلیت انبارداری و گزارش گیری",
+        "افزودن نامحدود کالا به سایت",
+        "طراحی UI/UX قالب اختصاصی",
+        "طراحی کاتالوگ دیجیتال"
+      ]
+    }
+  ]);
 
-  // Fetch data from the API
-  useEffect(() => {
-    const fetchPricingPlans = async () => {
-      try {
-        const response = await axios.get('https://bk.acoachgroup.com/pricePlan-get', {
-          headers: { domain: 'acoachgroup.com' } // Adjust headers as required
-        });
-        const { data, code, msg } = response.data;
-        if (code === 1) {
-          setPlans(data); // Set fetched data to the state
-        } else {
-          console.error(msg);
-        }
-      } catch (error) {
-        console.error('Error fetching pricing plans:', error);
+  const allFeatures = [
+    "زبان برنامه نویسی ASP.NET",
+    "پیاده سازی سئو تکنیکال",
+    "طراحی با استانداردهای گوگل برای سئو پذیری",
+    "بهینه سازی کدهای فرانت اند و بک اند",
+    "امنیت و Backup  روزانه",
+    "سرعت بالای بارگذاری صفحات",
+    "لایه امنیتی SSL",
+    "قالب ریسپانسیو ( بهینه برای موبایل، تبلت و دسکتاپ)",
+    "عضویت و ورود با شماره موبایل و بدون نیاز به نام کاربری و کلمه عبور ( و خرید خط اختصاصی پیامکی)",
+    "بخش وبلاگ و مقالات",
+    "آموزش تولیدمحتوای بهینه",
+    "پشتیبانی فنی",
+    "ایمیل اختصاصی",
+    "آموزش پنل کاربری",
+    "پشتیبان آموزشی برای کمک در درج محتوای اولیه",
+    "اتصال به درگاه پرداخت",
+    "دسته بندی محصولات ",
+    "تعریف مدیر با سطح دسترسی متفاوت",
+    "امکان تغییر وضعیت نمایش کالا ( عادی، اتمام موجودی، عدم نمایش، شگف¬ت انگیز )",
+    "قابلیت انبارداری و گزارش گیری",
+    "افزودن نامحدود کالا به سایت",
+    "امکان انتخاب قالب های متنوع  از بین چندین قالب کدنویسی شده",
+    "افزودن نامحدود صفحه به سایت",
+    "طراحی UI/UX  قالب اختصاصی طبق سلیقه شما",
+    "آموزش 4 جلسه ای سئو و بهینه سازی",
+    "طراحی کاتالوگ دیجیتال"
+  ];
+
+  const renderFeatures = (plan) => {
+    const includedFeatures = [];
+    const excludedFeatures = [];
+
+    // اگر پلان "سایت اختصاصی" باشد، همه ویژگی‌ها را تیک‌دار می‌کنیم
+    if (plan.title === "سایت اختصاصی") {
+      return allFeatures.map((feature, index) => (
+        <li key={index} style={{ color: "green" }}>
+          ✔️ {feature}
+        </li>
+      ));
+    }
+
+    // جدا کردن ویژگی‌های موجود و غایب برای دیگر پلان‌ها
+    allFeatures.forEach((feature) => {
+      if (plan.features.includes(feature)) {
+        includedFeatures.push(feature);
+      } else {
+        excludedFeatures.push(feature);
       }
-    };
-    fetchPricingPlans();
-  }, []);
+    });
 
-  const handleShowMore = (id) => {
-    setShowMore((prev) => ({ ...prev, [id]: !prev[id] }));
+    return (
+      <>
+        {includedFeatures.map((feature, index) => (
+          <li key={index} style={{ color: "green" }}>
+            ✔️ {feature}
+          </li>
+        ))}
+        {excludedFeatures.map((feature, index) => (
+          <li key={index} style={{ color: "red" }}>
+            ❌ {feature}
+          </li>
+        ))}
+      </>
+    );
   };
 
   return (
-    <section className="pricing-section" id="pricing">
+    <section className="pricing-2 mega-section section-bg-shade" id="pricing">
       <div className="container">
         <div className="section-heading center-heading">
           <h2 className="section-title">قیمت گذاری وبسایت</h2>
@@ -38,40 +181,36 @@ const Pricing = () => {
         </div>
         <div className="row">
           {plans.map((plan) => (
-            <div key={plan.id} className="col-lg-4 price-plan">
+            <div key={plan.id} className="col-12 col-md-9 col-lg-4 mx-auto price-plan">
               <div className="plan">
                 <div className="plan-cost">
-                  <img src={plan.pic} alt={plan.title} className="pricing-img icon" />
-                  {plan.position === '2' && <div className="ribbon">محبوبترین</div>}
-                  <p className="plan-price">{plan.price} تومان</p>
-                  <h4 className="plan-name">{plan.title}</h4>
+                  <h2 className="plan-name">{plan.title}</h2>
+                  {plan.position === '2' && <div className="ribbon">محبوب‌ترین</div>}
+                  <p className="plan-price">
+                    {plan.discount > 0 && (
+                      <span className="original-price">{plan.price} تومان</span>
+                    )}
+                    <div className="size2rem">
+                      {plan.price - plan.discount} تومان
+                    </div>
+                  </p>
                   <p className="plan-description">{plan.description}</p>
                 </div>
+
                 <div className="plan-details">
-                  <ul className="plan-list">
-                    {showMore[plan.id] ? (
-                      plan.features.map((feature, index) => (
-                        <li key={index} className={`plan-feat ${feature.isRed ? 'red' : ''}`}>
-                          {feature.name}
-                        </li>
-                      ))
-                    ) : (
-                      plan.features.slice(0, 10).map((feature, index) => (
-                        <li key={index} className={`plan-feat ${feature.isRed ? 'red' : ''}`}>
-                          {feature.name}
-                        </li>
-                      ))
-                    )}
+                  <ul>
+                    {renderFeatures(plan)}
                   </ul>
-                  <button
-                    className="showmore-btn"
-                    onClick={() => handleShowMore(plan.id)}
-                  >
-                    {showMore[plan.id] ? 'نمایش کمتر' : plan.moreBtnTitle}
-                  </button>
-                  <a href={plan.orderBtnUrl} className="order-btn">
-                    {plan.orderBtnTitle}
-                  </a>
+                  <div className="plan-cta">
+                    <a className="ma-btn-rounded ma-btn-primary" href={plan.moreBtnUrl}>
+                      {plan.moreBtnTitle}
+                    </a>
+                  </div>
+                  <div className="plan-cta">
+                    <a className="ma-btn-rounded ma-btn-primary" href={plan.orderBtnUrl}>
+                      {plan.orderBtnTitle}
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>

@@ -3,23 +3,45 @@ import IFaq from '../assets/images/faq/faq_illustration.png';
 import axios from 'axios';
 
 const Faq = () => {
-  const [faqs, setFaqs] = useState([]);
+  const [faq, setFaq] = useState([]); // داده‌های بخش FAQ
+  const [isLoading, setIsLoading] = useState(true); // وضعیت بارگذاری
+  const [error, setError] = useState(null); // مدیریت خطا
 
+  // تابع بارگذاری داده‌ها
   useEffect(() => {
-    const fetchFaqs = async () => {
+    const fetchFaq = async () => {
       try {
         const response = await axios.get('https://bk.acoachgroup.com/faq-get', {
-          headers: { domain: 'acoachgroup.com' },
+          headers: {
+            domain: 'acoachgroup.com', // ارسال هدر دامنه بدون پروتکل
+          },
         });
-        if (response.data.code === 1) {
-          setFaqs(response.data.data); // Assuming `data` contains the array of FAQ objects
+
+        const result = response.data;
+
+        if (result.code === '1' && result.data.length > 0) {
+          // فقط 4 داده اول را انتخاب کنید
+          setFaq(result.data.slice(0, 6)); // ذخیره 4 آیتم اول
+        } else {
+          setError('داده‌ای یافت نشد.');
         }
-      } catch (error) {
-        console.error("Error fetching FAQs:", error);
+      } catch (err) {
+        setError('خطا در اتصال به سرور'); // مدیریت خطا
+      } finally {
+        setIsLoading(false); // پایان بارگذاری
       }
     };
-    fetchFaqs();
+
+    fetchFaq();
   }, []);
+
+  if (isLoading) {
+    return <div>در حال بارگذاری...</div>; // نمایش وضعیت بارگذاری
+  }
+
+  if (error) {
+    return <div>{error}</div>; // نمایش پیام خطا
+  }
 
   return (
     <section className="faq mega-section section-bg-shade" id="faq">
@@ -42,30 +64,30 @@ const Faq = () => {
             </div>
           </div>
           <div className="col-12 col-lg-7">
-            <div className="faq-accordion wow fadeInUp" id="accordion" data-wow-delay="0.4s ">
-              {faqs.map((faq, index) => (
-                <div className="card mb-2" key={faq.id}>
+            <div className="faq-accordion wow fadeInUp" id="accordion" data-wow-delay="0.4s">
+              {faq.map((item, index) => (
+                <div className="card mb-2" key={item.id}>
                   <div className="card-header" id={`heading-${index + 1}`}>
                     <h5 className="mb-0 faq-title">
                       <button
                         className={`btn btn-link faq-btn ${index + 1}`}
                         data-bs-toggle="collapse"
                         data-bs-target={`#collapse-${index + 1}`}
-                        aria-expanded={index === 0 ? "true" : "false"}
+                        aria-expanded={index === 0 ? 'true' : 'false'}
                         aria-controls={`collapse-${index + 1}`}
                       >
-                        {faq.title}
+                        {item.title}
                       </button>
                     </h5>
                   </div>
                   <div
-                    className={`collapse ${index === 0 ? "show" : ""}`}
+                    className={`collapse ${index === 0 ? 'show' : ''}`}
                     id={`collapse-${index + 1}`}
                     aria-labelledby={`heading-${index + 1}`}
                     data-bs-parent="#accordion"
                   >
                     <div className="card-body">
-                      <p className="faq-answer">{faq.answer}</p>
+                      <p className="faq-answer">{item.answer}</p>
                     </div>
                   </div>
                 </div>

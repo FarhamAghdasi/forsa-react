@@ -3,44 +3,69 @@ import React, { useEffect, useState } from 'react';
 const Footer = () => {
   const [quickAccessLinks, setQuickAccessLinks] = useState([]);
   const [socialLinks, setSocialLinks] = useState([]);
+  const [contactInfo, setContactInfo] = useState({
+    email: '',
+    website: '',
+    address: '',
+    tel: '',
+    title: '',
+    description: ''
+  });
 
-  // بارگذاری داده‌های دسترسی سریع از API
   useEffect(() => {
     const fetchQuickAccessLinks = async () => {
       try {
         const response = await fetch('https://bk.acoachgroup.com/quickAccess-get', {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
-            'domain': 'acoachgroup.com' // یا دامنه مناسب خود را قرار دهید
+            'domain': 'acoachgroup.com'
           }
         });
         const data = await response.json();
-        if (data.code === 1) {
+        if (data.code === "1") {
           setQuickAccessLinks(data.data);
-        } else {
-          console.error('Error fetching quick access links:', data.msg);
         }
       } catch (error) {
         console.error('Error:', error);
       }
     };
 
-    // بارگذاری داده‌های شبکه‌های اجتماعی از API
     const fetchSocialLinks = async () => {
       try {
         const response = await fetch('https://bk.acoachgroup.com/social-get', {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
-            'domain': 'acoachgroup.com' // یا دامنه مناسب خود را قرار دهید
+            'domain': 'acoachgroup.com'
           }
         });
         const data = await response.json();
-        if (data.code === 1) {
+        if (data.code === "1") {
           setSocialLinks(data.data);
-        } else {
-          console.error('Error fetching social links:', data.msg);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    const fetchContactInfo = async () => {
+      try {
+        const response = await fetch('https://bk.acoachgroup.com/generalInfo-get', {
+          method: 'GET',
+          headers: {
+            'domain': 'acoachgroup.com'
+          }
+        });
+        const data = await response.json();
+        if (data.code === "1" && data.data.length > 0) {
+          const info = data.data[0];
+          setContactInfo({
+            email: info.email,
+            website: info.website,
+            address: info.address,
+            tel: info.tel,
+            title: info.title,
+            description: info.Description // استفاده از 'Description' از پاسخ API
+          });
         }
       } catch (error) {
         console.error('Error:', error);
@@ -49,6 +74,7 @@ const Footer = () => {
 
     fetchQuickAccessLinks();
     fetchSocialLinks();
+    fetchContactInfo();
   }, []);
 
   return (
@@ -57,11 +83,9 @@ const Footer = () => {
         <div className="row footer-cols">
           {/* بخش معرفی شرکت */}
           <div className="col-12 col-md-8 col-lg-4 footer-col wow fadeInUp" data-wow-delay="0.3s">
-            <h6 className="footer-col-title">نام</h6>
+            <h6 className="footer-col-title">{contactInfo.title}</h6>
             <div className="footer-col-content-wrapper">
-              <p className="footer-text-about-us">
-                شرکت برندینگ آکوچ‌ فعال در حوزه کوچینگ و آموزش دیجیتال مارکتینگ در کسب وکار می باشد.
-              </p>
+              <p className="footer-text-about-us">{contactInfo.description}</p>
               {/* بخش شبکه‌های اجتماعی */}
               <div className="social-icons">
                 <div className="sc-wraper dir-row sc-size-32">
@@ -78,6 +102,7 @@ const Footer = () => {
               </div>
             </div>
           </div>
+
           {/* بخش دسترسی سریع */}
           <div className="col-12 col-md-6 col-lg-2 footer-col wow fadeInUp" data-wow-delay=".7s">
             <h6 className="footer-col-title">دسترسی سریع</h6>
@@ -86,30 +111,43 @@ const Footer = () => {
                 {quickAccessLinks.map((link) => (
                   <li key={link.id} className="footer-menu-item">
                     <a className="footer-menu-link" href={link.url}>
-                      <i className={`fab ${link.icon} sc-icon`}></i> {link.title}
+                      <i className={`fa ${link.icon} sc-icon`}></i> {link.title}
                     </a>
                   </li>
                 ))}
               </ul>
             </div>
           </div>
+
           {/* بخش اطلاعات تماس */}
           <div className="col-12 col-md-8 col-lg-6 footer-col wow fadeInUp" data-wow-delay=".9s">
             <h6 className="footer-col-title">اطلاعات تماس</h6>
             <div className="footer-col-content-wrapper">
               <div className="contact-info-card">
-                <i className="fas fa-envelope icon"></i><a className="text-lowercase info" href="mailto:example@support.com">example@support.com</a>
+                <i className="fas fa-envelope icon"></i>
+                <a className="text-lowercase info" href={`mailto:${contactInfo.email}`}>
+                  {contactInfo.email}
+                </a>
               </div>
               <div className="contact-info-card">
-                <i className="fas fa-globe-africa icon"></i><a className="text-lowercase info" href="#0">www.yoursite.com</a>
+                <i className="fas fa-globe-africa icon"></i>
+                <a className="text-lowercase info" href={contactInfo.website}>
+                  {contactInfo.website}
+                </a>
               </div>
               <div className="contact-info-card">
-                <i className="fas fa-map-marker-alt icon"></i><span className="text-lowercase info">اسکندریه، Abc، خیابان Xyz، 5 مصر.</span>
+                <i className="fas fa-map-marker-alt icon"></i>
+                <span className="text-lowercase info">{contactInfo.address}</span>
+              </div>
+              <div className="contact-info-card">
+                <i className="fas fa-phone icon"></i>
+                <span className="text-lowercase info">{contactInfo.tel}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
+
       {/* بخش کپی رایت */}
       <div className="copyrights">
         <div className="container">

@@ -2,54 +2,44 @@ import React, { useEffect, useState } from 'react';
 import AboutImage1 from '../assets/images/about/about-1_photo.png';
 
 const About = () => {
-  const [aboutData, setAboutData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);  // افزودن وضعیت خطا
+  const [aboutData, setAboutData] = useState(null); // داده‌های بخش درباره ما
+  const [isLoading, setIsLoading] = useState(true); // وضعیت بارگذاری
+  const [error, setError] = useState(null); // مدیریت خطا
 
+  // تابع بارگذاری داده‌ها
   useEffect(() => {
-    const fetchAboutData = async () => {
+    const fetchAbout = async () => {
       try {
-        const domain = 'acoachgroup.com'; // دامنه سایت بدون پروتکل
-
-        const response = await fetch(`https://bk.acoachgroup.com/about-get?domain=${domain}`, {  
+        const response = await fetch('https://bk.acoachgroup.com/about-get', {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            domain: 'acoachgroup.com', // دامنه بدون پروتکل
           },
         });
 
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+        const result = await response.json();
 
-        const data = await response.json();
-
-        if (data.code === "1") {
-          if (data.data && data.data.length > 0) {
-            setAboutData(data.data[0]); // ذخیره داده‌ها در وضعیت (فرض می‌کنیم داده‌ها یک شیء هستند)
-          } else {
-            throw new Error(data.msg || 'No about data available');  // در صورت عدم وجود داده، پیغام msg را نمایش می‌دهیم
-          }
+        if (result.code === '1' && result.data.length > 0) {
+          setAboutData(result.data[0]); // ذخیره اولین آیتم موجود
         } else {
-          throw new Error(`Error fetching about data: ${data.msg}`);
+          setError('داده‌ای یافت نشد.');
         }
-      } catch (error) {
-        setError(error.message);  // ذخیره پیام خطا
-        console.error('Error:', error);
+      } catch (err) {
+        setError('خطا در اتصال به سرور'); // مدیریت خطا
       } finally {
-        setLoading(false);  // پایان بارگذاری
+        setIsLoading(false); // پایان بارگذاری
       }
     };
 
-    fetchAboutData();
+    fetchAbout();
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>; // وضعیت بارگذاری
+  if (isLoading) {
+    return <div>در حال بارگذاری...</div>; // نمایش وضعیت بارگذاری
   }
 
   if (error) {
-    return <div>Error: {error}</div>;  // نمایش خطا در صورت وجود
+    return <div>{error}</div>; // نمایش پیام خطا
   }
 
   return (
@@ -57,27 +47,41 @@ const About = () => {
       <div className="container">
         <div className="content-block">
           <div className="row">
-            <div className="col-12 col-lg-6 d-flex align-items-center about-col wow fadeInUp" data-wow-delay="0.2s">
+            {/* تصویر و توضیحات کوتاه */}
+            <div
+              className="col-12 col-lg-6 d-flex align-items-center about-col wow fadeInUp"
+              data-wow-delay="0.2s"
+            >
               <div className="img-area">
                 <div className="photo-banner-end">
                   <i className="fas fa-pen-nib icon"></i>
                   <p className="banner-text">
-                    {aboutData?.shortDesc}
+                    {aboutData?.shortDesc || 'توضیحی در مورد بخش درباره ما'}
                   </p>
                 </div>
-                <img className="about-img img-fluid" src={aboutData?.pic || AboutImage1} alt="Our vision" />
+                <img
+                  className="about-img img-fluid"
+                  src={`https://bk.acoachgroup.com/${aboutData?.pic}` || AboutImage1} // تصویر اصلی
+                  alt={aboutData?.title || 'Our vision'}
+                />
               </div>
             </div>
-            <div className="col-12 col-lg-6 d-flex align-items-center about-col wow fadeInUp" data-wow-delay="0.4s">
+
+            {/* عنوان و توضیحات کامل */}
+            <div
+              className="col-12 col-lg-6 d-flex align-items-center about-col wow fadeInUp"
+              data-wow-delay="0.4s"
+            >
               <div className="text-area">
-                <span className="tag-line">صاحبان کسب و کارهای نوپا !</span>
                 <h2 className="about-title">
                   {aboutData?.title || 'درباره ما'}
                 </h2>
                 <p className="about-text">
-                  {aboutData?.description || 'توضیحات بیشتری در دسترس نیست.'}
+                  {aboutData?.Description || 'توضیحات بیشتری در دسترس نیست.'}
                 </p>
-                <a className="ma-btn-primary" href="#0">بیشتر بدانید</a>
+                <a className="ma-btn-primary" href="#0">
+                  بیشتر بدانید
+                </a>
               </div>
             </div>
           </div>
@@ -85,6 +89,6 @@ const About = () => {
       </div>
     </section>
   );
-}
+};
 
 export default About;

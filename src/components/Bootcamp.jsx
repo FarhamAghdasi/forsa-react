@@ -1,80 +1,93 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import React, { useEffect, useState } from 'react';
+import Image from '../assets/images/about/about-1_photo.png';
 
 const Bootcamp = () => {
-  const [bootcampData, setBootcampData] = useState(null)
+  const [bootcamp, setBootcamp] = useState(null); // داده‌های بخش درباره ما
+  const [isLoading, setIsLoading] = useState(true); // وضعیت بارگذاری
+  const [error, setError] = useState(null); // مدیریت خطا
 
+  // تابع بارگذاری داده‌ها
   useEffect(() => {
-    const fetchBootcampData = async () => {
+    const fetchAbout = async () => {
       try {
-        const response = await axios.get('https://bk.acoachgroup.com/section-get', {
+        const response = await fetch('https://bk.acoachgroup.com/section-get', {
+          method: 'GET',
           headers: {
-            domain: 'acoachgroup.com'
-          }
-        })
-        if (response.data.code === 1) {
-          setBootcampData(response.data.data)
-        }
-      } catch (error) {
-        console.error('Error fetching bootcamp data:', error)
-      }
-    }
-    fetchBootcampData()
-  }, [])
+            domain: 'acoachgroup.com', // دامنه بدون پروتکل
+          },
+        });
 
-  if (!bootcampData) {
-    return <p>Loading...</p>
+        const result = await response.json();
+        console.log(result);
+
+        if (result.code === '1' && result.data.length > 0) {
+          setBootcamp(result.data[2]); // ذخیره آیتم سوم
+        } else {
+          setError('داده‌ای یافت نشد.');
+        }
+      } catch (err) {
+        setError('خطا در اتصال به سرور'); // مدیریت خطا
+      } finally {
+        setIsLoading(false); // پایان بارگذاری
+      }
+    };
+
+    fetchAbout();
+  }, []);
+
+  if (isLoading) {
+    return <div>در حال بارگذاری...</div>; // نمایش وضعیت بارگذاری
   }
+
+  if (error) {
+    return <div>{error}</div>; // نمایش پیام خطا
+  }
+
+  // استخراج مزایا به صورت لیست
+  const advantages = bootcamp.description
+    .split('مزایای شرکت در بوت کمپ:')[1] // متن بعد از عنوان "مزایا"
+    ?.split('شرایط شرکت در بوت کمپ:')[0] // متن قبل از "شرایط"
+    ?.trim()
+    ?.split('\n') // جدا کردن خطوط
+    ?.filter(line => line.trim().startsWith('1-') || line.trim().startsWith('2-') || line.trim().startsWith('3-') || line.trim().startsWith('4-')) // فیلتر موارد لیست
 
   return (
     <section className="about" id="bootcamp">
       <div className="container">
-        <div className="content-block" id="bootcamp">
+        <div className="content-block">
           <div className="row">
-            <div className="col-12 col-lg-6 d-flex align-items-center order-2 order-lg-0 about-col wow fadeInUp"
-              data-wow-delay="0.2s">
+            <div className="col-12 col-lg-6 d-flex align-items-center">
               <div className="text-area">
-                <span className="tag-line">{bootcampData.title}</span>
-                <h2 className="about-title">{bootcampData.shortDesc}</h2>
-                <div className="info-items">
-                  <div className="row g-0">
-                    <div className="col-12">
-                      <p className="about-text">{bootcampData.description}</p>
-                    </div>
-                    <div className="col-12">
-                      <ul className="menu-items">
-                        {/* Dynamically render each item from the API */}
-                        {bootcampData.items?.map((item, index) => (
-                          <li key={index} className="info-item">
-                            <img className="info-img-icon" src={item.icon} alt="icon" draggable="false" />
-                            <div className="info-content">
-                              <h5 className="info-title">{item.title}</h5>
-                              <p className="info-text">{item.text}</p>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                <a className="ma-btn-primary" href={bootcampData.btnurl}>{bootcampData.btntitle}</a>
+                <span className="tag-line">{bootcamp.title || 'عنوان بوت کمپ'}</span>
+                <h2 className="about-title">{bootcamp.shortDesc || 'توضیح کوتاه'}</h2>
+                <p className="about-text">
+                  {bootcamp.description?.split('مزایای شرکت در بوت کمپ:')[0].trim() || 'توضیحات کلی'}
+                </p>
+                <h2 className="advantages-title">مزایای شرکت در بوت کمپ</h2>
+                <ul className="advantages-list">
+                  {advantages?.map((adv, index) => (
+                    <li key={index}>{adv.trim().substring(2)}</li>
+                  ))}
+                </ul>
+                <a className="ma-btn-primary" href={bootcamp.btnurl || 'https://www.farhamaghdasi.ir/'}>
+                  {bootcamp.btntitle || 'عنوان دکمه'}
+                </a>
               </div>
             </div>
-            <div className="col-12 col-lg-6 d-flex align-items-center about-col order-0 order-lg-2 wow fadeInUp"
-              data-wow-delay="0.4s">
+            <div className="col-12 col-lg-6 d-flex align-items-center">
               <div className="img-area">
-                <div className="photo-banner-start">
-                  <i className="fas fa-code icon"></i>
-                  <p className="banner-text">{bootcampData.bannerText}</p>
-                </div>
-                <img className="img-fluid about-img" src={bootcampData.pic} alt="Bootcamp section" />
+                <img
+                  className="img-fluid about-img"
+                  src={`https://bk.acoachgroup.com/${bootcamp.pic}` || Image}
+                  alt={bootcamp.title || 'عنوان'}
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Bootcamp
+export default Bootcamp;

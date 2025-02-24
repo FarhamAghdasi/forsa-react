@@ -2233,6 +2233,22 @@ body.rounded-btns .ma-btn-primary, body.rounded-btns .ma-btn-secondary, body.rou
 .mt-rem {
   margin-top: 4.5rem;
 }
+.pricing-2 .plane-name {
+  color: #07727e;
+}
+.service-box .ma-btn-primary {
+  margin-top: .5rem;
+}
+h2.plan-name {
+  color: #07727e;
+  font-weight: 700;
+}
+.clients-logos {
+  display: flex;
+  justify-content: space-between;  /* فاصله بین اسلایدها */
+  flex-wrap: wrap;
+}
+
 .about .about-text {
   font-weight: 400;
   font-size: 1.25rem;
@@ -2745,12 +2761,18 @@ body.rounded-btns .ma-btn-primary, body.rounded-btns .ma-btn-secondary, body.rou
   position: relative;
   display: inline-block;
   font-size: 1.5rem;
-  font-weight: 900;
+  font-weight: 600;
   color: #fff;
   margin: 0;
   margin-bottom: 0.5rem;
   padding: 0;
   line-height: 1;
+}
+.original-price {
+  text-decoration: line-through;
+}
+.size2rem {
+  font-size: 2rem;
 }
 .pricing-3 .plan-price .plan-currency, .pricing-2 .plan-price .plan-currency, .pricing-1 .plan-price .plan-currency {
   position: absolute;
